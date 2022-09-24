@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "eamodio.gitlens",
+    "visualstudioexptteam.vscodeintellicode",
+    "ms-python.pylint",
+    "donjayamanne.python-extension-pack",
+    "rioj7.command-variable"
+  ]
+}
