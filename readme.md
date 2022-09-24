@@ -1,6 +1,7 @@
 ## Sobre o Projeto
 
-Projeto de estudo de python criando um ofuscador de campos de um arquivo JSON
+Projeto de estudo de python criando um ofuscador de campos de um arquivo JSON.
+Para uma melhor experiencia no vscode recomendamos que instale as extensões recomendadas na pasta .vscode
 
 ## Para rodar local
 
