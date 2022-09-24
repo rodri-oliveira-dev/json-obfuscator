@@ -2,29 +2,48 @@ from typing import Union
 
 
 class OfuscarDados:
-    def __init__(self, palavraOfuscacao: str):
-        self.palavraOfuscacao = palavraOfuscacao
+    '''
+    Classe responsavel pela ofuscação de campos de um JSON
+    '''
 
-    def ofuscarDados(self, dados: Union[dict, str, bytes], campos: list[str]):
+    MASCARA_PADRAO = "********"
+
+    def __init__(self, mascara_ofuscacao: str):
+        '''
+
+        Args:
+            mascara_ofuscacao (str): valor que sera usado como máscara de ofuscação.
+            Se um valor não for informado a [MASCARA_PADRAO] será usada.
+        '''
+        if mascara_ofuscacao and not mascara_ofuscacao.isspace():
+            self.mascara_ofuscacao = mascara_ofuscacao
+        else:
+            self.mascara_ofuscacao = self.MASCARA_PADRAO
+
+    def ofuscar_dados(self, json: Union[dict, str], campos: list[str]) -> dict | str:
         '''
         Ofusca os campos indicados de um JSON.
 
                 Parameters:
-                        dados  (Union[dict, str, bytes]): Dados a serem ofuscados
-                        campos (list[str]): Campos a serem aplicada ofuscacao
+                        dados  (Union[dict, str]): Dados a serem ofuscados
+                        campos (list[str]): Campos a serem aplicada a ofuscação
 
                 Returns:
                         Um JSON com os campos ofuscados
         '''
-        for root in dados.keys():
-            for idx, entity in enumerate(dados[root]):
-                dados[root][idx] = self.__protect(entity, campos, idx)
 
-        return dados
+        if not campos:
+            Exception("Não foram informadas os campos para ofuscação")
 
-    def __protect(self, dados: Union[dict, str, bytes], campos: Union[list, bool], idx: int):
+        for root in json.keys():
+            for idx, entity in enumerate(json[root]):
+                json[root][idx] = self.__protect(entity, campos, idx)
+
+        return json
+
+    def __protect(self, dados: Union[dict, str], campos: Union[list, bool], idx: int):
         if isinstance(campos, bool) and campos is True:
-            return self.palavraOfuscacao
+            return self.mascara_ofuscacao
         if isinstance(campos, list):
             for key in campos:
                 if key in dados.keys():

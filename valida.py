@@ -10,6 +10,6 @@ campos = ['email', 'password', 'aaaa']
 
 ofuscador = OfuscarDados("************")
 
-retorno = ofuscador.ofuscarDados(data, campos)
+retorno = ofuscador.ofuscar_dados(data, campos)
 
 pprint(retorno, width=100)
