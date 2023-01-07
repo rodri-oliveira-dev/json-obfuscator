@@ -1,6 +1,6 @@
 ## Sobre o Projeto
 
-Projeto de estudo de python criando um ofuscador de campos de um arquivo JSON
+Projeto de estudo de python criando um ofuscador de campos de um arquivo JSON.
 
 ## Para rodar local
 
