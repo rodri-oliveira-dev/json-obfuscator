@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import rsa
-from src.exceptions.chave_cripitografia_exception import \
+from src.domain_exceptions.chave_cripitografia_exception import \
     ChaveCriptografiaException
 
 
@@ -23,11 +23,16 @@ class CertificadosService:
     def caminho_chave_privada(self):
         return self.__chave_privada
 
-    def __init__(self, diretorio_chaves: str):
+    def __init__(self,
+                 diretorio_chaves: str,
+                 criar_diretorio_chaves: bool):
         if (diretorio_chaves is None or diretorio_chaves.count == 0):
             raise ChaveCriptografiaException('Diretório é obrigatório')
         if not os.path.exists(diretorio_chaves):
-            raise ChaveCriptografiaException('Diretório inexistente')
+            if criar_diretorio_chaves:
+                os.makedirs(diretorio_chaves)
+            else:
+                raise ChaveCriptografiaException('Diretório inexistente')
 
         self.__diretorio_chaves = diretorio_chaves
         self.__chave_publica = f'{self.__diretorio_chaves}/chave-publica.pem'
