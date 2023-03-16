@@ -6,14 +6,18 @@ cd /caminho/para/seu/repositorio
 # Verifica se há alterações na pasta app
 git status app | grep -qE 'new file|modified|deleted'
 
-# Se houver alterações na pasta app, execute o gradlew clean build
-if [ $? -eq 0 ]; then
-  echo "Alterações encontradas na pasta app. Executando 'gradlew clean build'."
+# Verifica se há commits pendentes de push na branch atual na pasta app
+git fetch
+commits_pendentes=$(git diff --name-only --diff-filter=d origin/HEAD HEAD -- app)
+
+if [ $? -eq 0 ] || [ ! -z "$commits_pendentes" ]; then
+  echo "Alterações ou commits pendentes encontrados na pasta app. Executando 'gradlew clean build'."
   cd app
   ./gradlew clean build
 else
-  echo "Nenhuma alteração encontrada na pasta app."
+  echo "Nenhuma alteração ou commit pendente encontrado na pasta app."
 fi
+
 
 
 
