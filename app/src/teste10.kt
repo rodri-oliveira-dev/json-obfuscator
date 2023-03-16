@@ -1,10 +1,20 @@
 #!/bin/bash
 
-# Verifica se há commits não enviados ou arquivos modificados, adicionados ou excluídos na branch atual
-if [[ -n $(git diff --name-only HEAD origin/$(git rev-parse --abbrev-ref HEAD) -- app/) || $(find app/ -type f -newermt "$(git log -1 --format=%cd)") ]]; then
-    # Se houver, executa o comando gradlew clean build
-    ./gradlew clean build
+# Navega até a pasta do repositório Git
+cd /caminho/para/seu/repositorio
+
+# Verifica se há alterações na pasta app
+git status app | grep -qE 'new file|modified|deleted'
+
+# Se houver alterações na pasta app, execute o gradlew clean build
+if [ $? -eq 0 ]; then
+  echo "Alterações encontradas na pasta app. Executando 'gradlew clean build'."
+  cd app
+  ./gradlew clean build
+else
+  echo "Nenhuma alteração encontrada na pasta app."
 fi
+
 
 
 
