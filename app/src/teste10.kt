@@ -1,15 +1,11 @@
 #!/bin/bash
 
-# Verifica se existem commits que não foram enviados
-if git log origin/main..HEAD &> /dev/null; then
-    echo "Existem commits que ainda não foram enviados para o repositório remoto."
-    # Verifica se existem arquivos modificados, novos ou excluídos
-    if git status --porcelain | grep -E '^(M|A|D)' &> /dev/null; then
-        echo "Existem arquivos modificados, novos ou excluídos que precisam ser adicionados e commitados."
-        # Executa o comando "gradlew build"
-        ./gradlew build
-    fi
+# Verifica se há commits não enviados ou arquivos modificados, adicionados ou excluídos na branch atual
+if [[ -n $(git diff --name-status HEAD origin/$(git rev-parse --abbrev-ref HEAD)) || $(find . -type f -newermt "$(git log -1 --format=%cd)") ]]; then
+    # Se houver, executa o comando gradlew clean build
+    ./gradlew clean build
 fi
+
 
 
 
