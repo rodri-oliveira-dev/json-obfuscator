@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # Verifica se há commits não enviados ou arquivos modificados, adicionados ou excluídos na branch atual
-if [[ -n $(git diff --name-status HEAD origin/$(git rev-parse --abbrev-ref HEAD)) || $(find . -type f -newermt "$(git log -1 --format=%cd)") ]]; then
+if [[ -n $(git diff --name-only HEAD origin/$(git rev-parse --abbrev-ref HEAD) -- app/) || $(find app/ -type f -newermt "$(git log -1 --format=%cd)") ]]; then
     # Se houver, executa o comando gradlew clean build
     ./gradlew clean build
 fi
+
 
 
 
