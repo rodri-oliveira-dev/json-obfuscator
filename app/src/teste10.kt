@@ -1,17 +1,7 @@
-class RequestInfoContext {
-    companion object {
-        private val threadLocal = ThreadLocal<RequestInfo>()
+#!/bin/bash
 
-        fun set(requestInfo: RequestInfo) {
-            threadLocal.set(requestInfo)
-        }
-
-        fun get(): RequestInfo {
-            return threadLocal.get()
-        }
-
-        fun clear() {
-            threadLocal.remove()
-        }
-    }
-}
+# Verifica se há commits não enviados ou arquivos modificados, adicionados ou excluídos na branch atual
+if [[ -n $(git log --name-status --diff-filter=ADM origin/$(git rev-parse --abbrev-ref HEAD)..HEAD) ]]; then
+    # Se houver, executa o comando gradlew clean build
+    ./gradlew clean build
+fi
