@@ -1,22 +1,21 @@
 #!/bin/bash
 
-# Navega até a pasta do repositório Git
-cd /caminho/para/seu/repositorio
-
-# Verifica se há alterações na pasta app
-git status app | grep -qE 'new file|modified|deleted'
-
-# Verifica se há commits pendentes de push na branch atual na pasta app
-git fetch
-commits_pendentes=$(git diff --name-only --diff-filter=d origin/HEAD HEAD -- app)
-
-if [ $? -eq 0 ] || [ ! -z "$commits_pendentes" ]; then
-  echo "Alterações ou commits pendentes encontrados na pasta app. Executando 'gradlew clean build'."
-  cd app
-  ./gradlew clean build
-else
-  echo "Nenhuma alteração ou commit pendente encontrado na pasta app."
+# Verifica se há commits locais não enviados na pasta app
+if [[ $(git status app/ --porcelain) ]]; then
+    echo "Existem commits locais não enviados na pasta app"
+    ./gradlew build
+    exit 0
 fi
+
+# Verifica se há arquivos modificados, adicionados ou excluídos na pasta app
+if [[ $(git status app/ --porcelain) ]]; then
+    echo "Existem arquivos modificados, adicionados ou excluídos na pasta app"
+    ./gradlew build
+    exit 0
+fi
+
+echo "Não há commits locais não enviados ou arquivos modificados, adicionados ou excluídos na pasta app"
+
 
 
 
