@@ -1,68 +1,25 @@
-#!/bin/bash
+# Navega até a pasta do repositório Git
+cd /caminho/para/o/repositório/git/
 
-# Verifica se há commits locais não enviados na pasta app
-if [[ $(git status app/ --porcelain) ]]; then
-    echo "Existem commits locais não enviados na pasta app"
-    ./gradlew build
-    exit 0
+# Obter o nome da branch atual
+branch_atual=$(git rev-parse --abbrev-ref HEAD)
+
+# Define uma variável para rastrear se o build já foi executado
+build_executado=false
+
+# Verifica se há alterações na pasta app
+if git status app | grep -qE 'new file|modified|deleted'; then
+    echo "Alterações encontradas na pasta app na branch $branch_atual. Executando 'gradlew clean build'."
+    ./gradlew clean build
+    build_executado=true
+else
+    echo "Nenhuma alteração encontrada na pasta app na branch $branch_atual."
 fi
 
-# Verifica se há arquivos modificados, adicionados ou excluídos na pasta app
-if [[ $(git status app/ --porcelain) ]]; then
-    echo "Existem arquivos modificados, adicionados ou excluídos na pasta app"
-    ./gradlew build
-    exit 0
+# Verifica se há commits pendentes de push na branch atual na pasta app, somente se o build não tiver sido executado anteriormente
+if ! $build_executado && git fetch && [ -n "$(git diff --name-only --diff-filter=d origin/$branch_atual HEAD -- app)" ]; then
+    echo "Commits pendentes encontrados na pasta app na branch $branch_atual. Executando 'gradlew clean build'."
+    ./gradlew clean build
+else
+    echo "Nenhum commit pendente encontrado na pasta app na branch $branch_atual."
 fi
-
-echo "Não há commits locais não enviados ou arquivos modificados, adicionados ou excluídos na pasta app"
-
-
-
-
-
-
-
-
-import io.micronaut.http.HttpRequest
-import io.micronaut.http.HttpResponse
-import io.micronaut.http.annotation.FilterMatcher
-import io.micronaut.http.filter.HttpFilter
-import io.micronaut.http.filter.ServerFilterChain
-import org.reactivestreams.Publisher
-
-class RequestDataFilter : HttpFilter {
-    override fun doFilter(request: HttpRequest<*>, chain: ServerFilterChain): Publisher<out HttpResponse<*>> {
-        val requestId = request.headers.get("X-Request-ID") ?: generateRequestId()
-        val requestOf = request.headers.get("X-Request-Of") ?: "Unknown"
-
-        RequestContextHolder.setRequestData(RequestData(requestId, requestOf))
-
-        return chain.proceed(request).doFinally {
-            RequestContextHolder.clear()
-        }
-    }
-
-    private fun generateRequestId(): String {
-        // Implemente sua lógica de geração de ID de requisição aqui
-        return UUID.randomUUID().toString()
-    }
-}
-
-
-
-
-object RequestContextHolder {
-    private val contextHolder = ThreadLocal<RequestData>()
-
-    fun setRequestData(requestData: RequestData) {
-        contextHolder.set(requestData)
-    }
-
-    fun getRequestData(): RequestData? {
-        return contextHolder.get()
-    }
-
-    fun clear() {
-        contextHolder.remove()
-    }
-}
