@@ -1,29 +1,16 @@
-import json
-import os
 
-from src.services.criptografar_dados_service import CriptografarDadosService
-from src.services.ofuscar_dados_service import OfuscarDadosService
-from src.shared.certificados_service import CertificadosService
+import json
+
+from src.ofuscar_dados import ObfuscateJson
 
 
 def iniciar():
 
-    campos = ['email', 'password']
-    diretorio_chave = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), 'chaves')
+    campos = {'cidade', 'idade'}
+    ofuscar_dados_service = ObfuscateJson(campos)
 
-    certificado_service = CertificadosService(
-        diretorio_chaves=diretorio_chave, criar_diretorio_chaves=True)
-
-    certificado_service.gerar_chaves(True)
-
-    criptografar_dados_service = CriptografarDadosService(certificado_service)
-
-    ofuscar_dados_service = OfuscarDadosService(
-        criptografar_dados_service, campos)
-
-    data = json.loads(open("app/tests/to_obfuscate_example.json", "rb").read())
-    retorno = ofuscar_dados_service.ofuscar_dados(data)
+    data = {"nome": "João Silva", "idade": 30, "cidade": "São Paulo"}
+    retorno = ofuscar_dados_service.to_json(data)
     print(retorno)
 
 
