@@ -1,0 +1,198 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "Ofuscar dados"
+    }
+  ],
+
+  "settings": {
+    //Configurações de IDE
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
+    "explorer.autoReveal": true,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    //Configurações Python
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.lintOnSave": true,
+    "python.linting.flake8Args": ["--ignore=E305,W504"],
+    "python.linting.ignorePatterns": [
+      "**/site-packages/**/*.py",
+      ".vscode/*.py",
+      "**/.venv/*.py"
+    ],
+    "python.testing.pytestArgs": ["app"],
+    "python.testing.unittestEnabled": false,
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.testing.pytestEnabled": true,
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.exclude": [".github"],
+    "python.analysis.diagnosticMode": "workspace",
+    "python.formatting.provider": "none",
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.autopep8",
+      "editor.formatOnSave": true
+    },
+    "files.exclude": {
+      "**/.github": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true
+    },
+    "files.watcherExclude": {
+      "**/.github/**": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true
+    },
+    "search.exclude": {
+      "**/github": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true
+    },
+    "vsintellicode.features.python.deepLearning": "enabled",
+    "editor.minimap.autohide": true,
+    "coverage-gutters.coverageBaseDir": "app",
+    "coverage-gutters.coverageFileNames": [
+      "lcov.info",
+      "cov.xml",
+      "coverage.xml",
+      "jacoco.xml",
+      "coverage.cobertura.xml"
+    ],
+    "cSpell.language": "en,pt-BR"
+  },
+  "extensions": {
+    "recommendations": [
+      "vscode-icons-team.vscode-icons",
+      "esbenp.prettier-vscode",
+      "ms-python.vscode-pylance",
+      "ms-python.python",
+      "visualstudioexptteam.vscodeintellicode",
+      "littlefoxteam.vscode-python-test-adapter",
+      "rioj7.command-variable",
+      "bierner.markdown-mermaid",
+      "ryanluker.vscode-coverage-gutters",
+      "sourcery.sourcery"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Flake Lint",
+        "command": "python -m flake8 --ignore E305,W504 --exclude .git,__pycache__,.venv",
+        "type": "shell",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}/app"
+        },
+        "presentation": {
+          "reveal": "always"
+        },
+        "group": "build"
+      },
+      {
+        "label": "Executar Testes",
+        "command": "python -m pytest --verbose --color=yes",
+        "type": "shell",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}/app"
+        },
+        "presentation": {
+          "reveal": "always"
+        },
+        "group": "test"
+      },
+      {
+        "label": "Relatorio Cobertura",
+        "command": "python -m pytest --cov=src tests/",
+        "type": "shell",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}/app"
+        },
+        "presentation": {
+          "reveal": "always"
+        },
+        "group": "test"
+      },
+      {
+        "label": "Relatorio Cobertura (HTML)",
+        "command": "python -m pytest --cov=src tests/ --cov-report html",
+        "type": "shell",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}/app"
+        },
+        "presentation": {
+          "reveal": "always"
+        },
+        "group": "test"
+      },
+      {
+        "label": "Relatorio Cobertura (VSCode)",
+        "command": "python -m pytest --cov=src tests/ --cov-report xml:cov.xml",
+        "type": "shell",
+        "args": [],
+        "options": {
+          "cwd": "${workspaceFolder}/app"
+        },
+        "presentation": {
+          "reveal": "always"
+        },
+        "group": "test"
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: arquivo atual",
+        "type": "python",
+        "request": "launch",
+        "console": "integratedTerminal",
+        "autoReload": {
+          "enable": true
+        },
+        "cwd": "${workspaceFolder}\\app",
+        "module": "${input:currentPythonModule}"
+      },
+      {
+        "name": "Python: módulo",
+        "type": "python",
+        "request": "launch",
+        "console": "integratedTerminal",
+        "autoReload": {
+          "enable": true
+        },
+        "cwd": "${workspaceFolder}\\app",
+        "module": "${input:userPythonModule}"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "userPythonModule",
+        "type": "promptString",
+        "description": "Informe o módulo que será executado:"
+      },
+      {
+        "id": "currentPythonModule",
+        "type": "command",
+        "command": "extension.commandvariable.transform",
+        "args": {
+          "text": "${command:extension.commandvariable.file.relativeFileDotsNoExtension}",
+          "find": "app.",
+          "replace": ""
+        }
+      }
+    ]
+  }
+}
