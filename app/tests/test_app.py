@@ -1,32 +1,42 @@
 import pytest
-from src.ofuscar_dados import ObfuscateJson
+import json
+
+from src.ofuscar_dados import ofuscar
 
 
-def test_empty_names():
-    censura = ObfuscateJson(set())
-    obj = {"nome": "João Silva", "idade": 30, "cidade": "São Paulo"}
-    expected = '{"cidade": "São Paulo", "idade": 30, "nome": "João Silva"}'
-    assert censura.to_json(obj) == expected
+def test_ofuscar_string():
+    dados = ['senha']
+    ofusc = '{"nome": "João", "senha": "1234"}'
+    resultado = ofuscar(dados, ofusc, in_place=False)
+    assert resultado == {'nome': 'João', 'senha': 'oculto'}
 
+def test_ofuscar_dict():
+    dados = ['senha']
+    ofusc = {"nome": "João", "senha": "1234"}
+    resultado = ofuscar(dados, ofusc, in_place=False)
+    assert resultado == {'nome': 'João', 'senha': 'oculto'}
 
-def test_censor_name():
-    censura = ObfuscateJson({"nome"})
-    obj = {"nome": "João Silva", "idade": 30, "cidade": "São Paulo"}
-    expected = '{"cidade": "São Paulo", "idade": 30, "nome": "oculto"}'
-    assert censura.to_json(obj) == expected
+def test_ofuscar_nested():
+    dados = ['senha', 'cartao']
+    ofusc = '{"nome": "João", "senha": "1234", "cartao": {"numero": "1111-2222-3333-4444", "cvv": "123"}}'
+    resultado = ofuscar(dados, ofusc, in_place=False)
+    assert resultado == {'nome': 'João', 'senha': 'oculto', 'cartao': {'numero': 'oculto', 'cvv': 'oculto'}}
 
+def test_ofuscar_list():
+    dados = ['senha', 'cartao']
+    ofusc = '[{"nome": "João", "senha": "1234", "cartao": {"numero": "1111-2222-3333-4444", "cvv": "123"}}]'
+    resultado = ofuscar(dados, ofusc, in_place=False)
+    assert resultado == [{'nome': 'João', 'senha': 'oculto', 'cartao': {'numero': 'oculto', 'cvv': 'oculto'}}]
 
-def test_censor_nested():
-    censura = ObfuscateJson({"endereco"})
-    obj = {"nome": "João Silva", "idade": 30, "cidade": "São Paulo",
-           "endereco": {"rua": "Av. Paulista", "numero": 1000}}
-    expected = '{"cidade": "São Paulo", "endereco": {"numero": 1000, "rua": "oculto"}, "idade": 30, "nome": "João Silva"}'
-    assert censura.to_json(obj) == expected
+def test_ofuscar_invalid_json():
+    dados = ['senha']
+    ofusc = '{"nome": "João", "senha": "1234"'
+    with pytest.raises(ValueError):
+        ofuscar(dados, ofusc, in_place=False)
 
-
-def test_censor_list():
-    censura = ObfuscateJson({"nome"})
-    obj = [{"nome": "João Silva", "idade": 30},
-           {"nome": "Maria Santos", "idade": 25}]
-    expected = '[{"idade": 30, "nome": "oculto"}, {"idade": 25, "nome": "oculto"}]'
-    assert censura.to_json(obj) == expected
+def test_ofuscar_unsupported_type():
+    dados = ['senha']
+    ofusc = '{"nome": "João", "senha": set([1, 2, 3])}'
+    ofusc = json.loads(json.dumps(eval(ofusc)))
+    resultado = ofuscar(dados, ofusc, in_place=False)
+    assert resultado == {'nome': 'João', 'senha': set([1, 2, 3])}

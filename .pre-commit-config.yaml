@@ -1,0 +1,17 @@
+repos:
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: python -m pytest
+        args: ["app/"]
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: pylint
+        name: pylint
+        entry: python -m pylint
+        args: ["app/"]
+        language: system
+        pass_filenames: false
+        always_run: true

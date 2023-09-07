@@ -1,46 +1,33 @@
 import json
-from typing import Any, Set
 
+def ofuscar(dados, ofusc, in_place=True):
+    try:
+        if isinstance(ofusc, str):
+            ofusc = json.loads(ofusc)
+    except json.JSONDecodeError:
+        raise ValueError("A entrada não é um JSON válido")
 
-class ObfuscateJson:
-    def __init__(self, names: Set[str]):
-        self.names = names
+    if not in_place:
+        ofusc = json.loads(json.dumps(ofusc))
 
-    def to_json(self, obj: Any) -> str:
-        if obj is None:
-            return "{}"
+    dados = [palavra.lower() for palavra in dados]
 
-        try:
-            json_str = json.dumps(
-                obj, default=lambda o: o.__dict__, sort_keys=True)
-            if not self.names:
-                return json_str
+    def percorrer(obj, visitados):
+        if id(obj) in visitados:
+            return obj
+        visitados.add(id(obj))
 
-            json_obj = json.loads(json_str)
-            self.filter_json_element(json_obj)
-            return json.dumps(
-                json_obj,
-                default=lambda o: o.__dict__,
-                sort_keys=True)
-        except json.JSONDecodeError:
-            return "{}"
+        if isinstance(obj, dict):
+            for chave, valor in list(obj.items()):
+                if isinstance(valor, (dict, list)):
+                    obj[chave] = percorrer(valor, visitados)
+                elif chave.lower() in dados:
+                    obj[chave] = "oculto"
+        elif isinstance(obj, list):
+            for i in range(len(obj)):
+                obj[i] = percorrer(obj[i], visitados)
+        return obj
 
-    def filter_json_element(self, json_element: Any) -> None:
-        if isinstance(json_element, dict):
-            for key, value in json_element.items():
-                if key in self.names:
-                    json_element[key] = self.replace_value(value)
-                else:
-                    self.filter_json_element(value)
-        elif isinstance(json_element, list):
-            for index, value in enumerate(json_element):
-                json_element[index] = self.replace_value(value)
+    ofusc = percorrer(ofusc, set())
 
-    def replace_value(self, value: Any) -> Any:
-        if isinstance(value, (dict, list)):
-            self.filter_json_element(value)
-            return value
-        elif isinstance(value, (str, int, float, bool)):
-            return "oculto"
-        else:
-            return "oculto"
+    return ofusc
