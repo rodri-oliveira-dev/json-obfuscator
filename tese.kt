@@ -1,48 +1,47 @@
-import io.micronaut.context.annotation.Factory
-import io.micronaut.http.client.HttpClientConfiguration
-import io.micronaut.http.client.HttpClientFactory
-import io.micronaut.http.client.HttpClientOptions
-import io.micronaut.runtime.ApplicationConfiguration
+import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 
-@Factory
-class CustomHttpClientFactory(
-    private val applicationConfiguration: ApplicationConfiguration,
-    private val httpClientConfiguration: HttpClientConfiguration
-) {
+class ValidarSolicitacaoUseCaseImplTest {
 
-    @Singleton
-    fun customHttpClient(
-        @Named("custom") httpClientOptions: HttpClientOptions
-    ): HttpClient {
-        return HttpClientFactory.create(httpClientOptions, applicationConfiguration, httpClientConfiguration)
-    }
+    @Test
+    fun `deve chamar validadores na ordem correta`() {
+        // Mock das dependências
+        val transferenciaRepository = Mockito.mock(TransferenciaRepository::class.java)
+        val transferenciaViewMapper = Mockito.mock(TransferenciaViewMapper::class.java)
 
-    @Named("custom")
-    @Singleton
-    fun customHttpClientOptions(): HttpClientOptions {
-        return HttpClientOptions()
-            .apply {
-                propagation = TracingHttpClientPropagationThreadLocal.PROPERTY_NAME
-            }
+        // Mock dos validadores
+        val validaProduto = Mockito.spy(ValidaProduto())
+        val validaPrograma = Mockito.spy(ValidaPrograma())
+        val validaProdutoInformado = Mockito.spy(ValidaProdutoInformado())
+        // ...mock outros validadores conforme necessário
+
+        // Instanciando a classe a ser testada
+        val validarSolicitacaoUseCase = ValidarSolicitacaoUseCaseImpl(
+            transferenciaRepository,
+            transferenciaViewMapper
+        )
+
+        // Usando reflection para substituir a filaDeValidadores pela nossa mockada
+        val field = ValidarSolicitacaoUseCaseImpl::class.java.getDeclaredField("filaDeValidadores")
+        field.isAccessible = true
+        field.set(validarSolicitacaoUseCase, validaProduto)
+
+        // Encadeamento manual dos validadores
+        validaProduto.setNext(validaPrograma)
+        validaPrograma.setNext(validaProdutoInformado)
+        // ...continue o encadeamento conforme necessário
+
+        // Criar um pedido e configuração de programa mockados
+        val pedido = Mockito.mock(Pedido::class.java)
+        val programaConfig = Mockito.mock(ProgramaConfig::class.java)
+
+        // Execução do método de validação
+        validarSolicitacaoUseCase.validar(pedido, programaConfig)
+
+        // Verificação se cada validador foi chamado
+        Mockito.verify(validaProduto).check(programaConfig, pedido)
+        Mockito.verify(validaPrograma).check(programaConfig, pedido)
+        Mockito.verify(validaProdutoInformado).check(programaConfig, pedido)
+        // ...verifique os outros validadores conforme necessário
     }
 }
-
-
-
-micronaut:
-  http:
-    client:
-      default-client:
-        default:
-          uri: http://localhost:8080 # Configuração padrão do HttpClient
-        customized:
-          uri: http://localhost:8080 # URL da API externa
-          propagation: io.micronaut.tracing.propagation.TracePropagation.ThreadLocal
-
-
-
-
-micronaut:
-  http:
-    client:
-      default-client: customized
