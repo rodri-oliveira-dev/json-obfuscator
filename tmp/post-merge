@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "Atualizando dependências do projeto..."
+dotnet restore Bunge.Microservices.sln
+
+echo "Post-merge hook concluído."

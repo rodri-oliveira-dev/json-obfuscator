@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Executa o build do projeto com múltiplos processos, sem restaurar pacotes e com resumo de performance
+dotnet build Bunge.Microservices.sln --no-restore --verbosity quiet --configuration Release -m -clp:PerformanceSummary
+build_result=$?
+
+# Se o build falhar, aborta o push
+if [ $build_result -ne 0 ]; then
+    echo "ERRO: O build falhou."
+    exit 1
+fi
+
+# Executa os testes com execução em paralelo
+dotnet test Bunge.Microservices.sln --no-build --verbosity quiet --configuration Release --settings test.runsettings
+test_result=$?
+
+# Se os testes falharem, aborta o push
+if [ $test_result -ne 0 ]; then
+    echo "ERRO: Os testes falharam."
+    exit 1
+fi
+
+# Se o build e os testes forem bem-sucedidos
+echo "Build e testes OK"
+
+exit 0

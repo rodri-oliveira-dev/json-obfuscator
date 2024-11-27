@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# Verifica se o TSqlLint já está instalado
+if command -v tsqllint &> /dev/null; then
+    echo "TSqlLint já está instalado."
+else
+    echo "TSqlLint não encontrado. Instalando TSqlLint..."
+    dotnet tool install --global TSQLLint
+    if [ $? -ne 0 ]; then
+        echo "Falha na instalação do TSqlLint. Verifique se o .NET SDK está instalado e configurado corretamente."
+        exit 1
+    fi
+    echo "TSqlLint instalado com sucesso."
+fi
+
+# Caminho da pasta a ser verificada
+DIR="Shared/Bunge.Migrations/Migrations/"
+
+# Obtém a lista de arquivos .sql novos ou modificados
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "^$DIR.*\.sql$")
+
+if [ -z "$FILES" ]; then
+    echo "Nenhum arquivo SQL novo ou modificado encontrado na pasta '$DIR'."
+    exit 0
+fi
+
+# Função para verificar se um arquivo .sql começa com [0-9]{5}
+validate_filename() {
+    local filepath="$1"
+    local filename=$(basename "$filepath")
+	
+    if [[ ! "$filename" =~ ^[0-9]{5} ]]; then
+        echo "Erro: O arquivo '$filename' não começa com um prefixo numérico de 5 dígitos."
+        return 1
+    fi
+    if [[ ${#filename} -gt 255 ]]; then
+        echo "Erro: O nome do arquivo '$filename' (incluindo a extensão) tem mais de 255 caracteres."
+        return 1
+    fi
+    return 0
+}
+
+# Flag para controlar se houve erro
+error_flag=0
+
+# Executa o TSqlLint em cada arquivo e verifica as regras de nomeação
+for FILE in $FILES; do
+    echo "Verificando linting do arquivo: $FILE"
+    tsqllint "$FILE"
+    if [ $? -ne 0 ]; then
+        echo "Erro de linting encontrado no arquivo: $FILE. Corrija os problemas e tente novamente."
+        exit 1
+    fi
+    
+    validate_filename "$FILE" || error_flag=1
+done
+
+if [[ $error_flag -ne 0 ]]; then
+    echo "Pre-push hook falhou devido aos erros acima. Ajuste os arquivos .sql e tente novamente."
+    exit 1
+fi
+
+echo "Todos os arquivos SQL passaram na verificação de linting e de nomeação com sucesso."
+exit 0
