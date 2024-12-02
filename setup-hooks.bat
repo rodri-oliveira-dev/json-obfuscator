@@ -20,3 +20,4 @@ REM Copia todos os arquivos da pasta de hooks para .git/hooks
 xcopy /Y /I "%SOURCE_HOOKS_DIR%\*" "%DESTINATION_HOOKS_DIR%\"
 
 echo Hooks copiados para .git/hooks.
+/* Modificação única: Atualizando dependências em 2024-12-02T11:51:56-03:00 - 1663905552 */
