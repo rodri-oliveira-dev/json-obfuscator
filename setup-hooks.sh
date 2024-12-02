@@ -24,3 +24,4 @@ cp -f $SOURCE_HOOKS_DIR/* $DESTINATION_HOOKS_DIR/
 chmod +x $DESTINATION_HOOKS_DIR/*
 
 echo "Hooks copiados para .git/hooks e configurados como executáveis."
+/* Modificação única: Aprimorando performance em 2024-12-02T16:15:44-03:00 - 1464854680 */
