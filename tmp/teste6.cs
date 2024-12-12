@@ -12,29 +12,29 @@ class Program
 
         Console.WriteLine("WireMock está rodando na porta: " + server.Ports[0]);
 
-        // Configura a rota /test-retry para retornar respostas sequenciais
+        // Configura a rota /test-retry para retornar 404 na primeira tentativa
         server.Given(
             Request.Create()
                 .WithPath("/test-retry")
                 .UsingGet()
         )
         .InScenario("Retry Scenario") // Nomeia o cenário
-        .WhenScenarioStateIs("Started") // Estado inicial do cenário
-        .WillSetStateTo("Second Attempt") // Altera o estado após a resposta
+        .WhenStateIs("Started") // Estado inicial do cenário
+        .WillSetStateTo("Second Attempt") // Define o próximo estado após essa resposta
         .RespondWith(
             Response.Create()
                 .WithStatusCode(404)
                 .WithBody("{\"message\": \"Not Found - First Attempt\"}")
         );
 
-        // Configuração para a segunda requisição
+        // Configuração para a segunda tentativa
         server.Given(
             Request.Create()
                 .WithPath("/test-retry")
                 .UsingGet()
         )
         .InScenario("Retry Scenario") // Mesmo cenário
-        .WhenScenarioStateIs("Second Attempt") // Estado após a primeira resposta
+        .WhenStateIs("Second Attempt") // Estado após a primeira resposta
         .RespondWith(
             Response.Create()
                 .WithStatusCode(200)
