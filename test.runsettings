@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- Habilita a execução paralela de testes -->
+    <MaxCpuCount>4</MaxCpuCount> <!-- Defina o número de núcleos ou deixe em branco para usar o máximo disponível -->
+  </RunConfiguration>
+</RunSettings>
