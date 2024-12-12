@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <NeutralLanguage>pt-BR</NeutralLanguage>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+    <RootNamespace>Bunge.Partner</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWS.Messaging" Version="0.9.0" />
+    <PackageReference Include="Datadog.Trace" Version="2.33.0" />
+    <PackageReference Include="Datadog.Trace.Annotations" Version="1.0.0" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.31" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.31" />
+    <PackageReference Include="Hangfire.MAMQSqlExtension" Version="1.0.6" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.31" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.27" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.35.0" />
+    <PackageReference Include="OfficeIMO.Word" Version="0.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0"/>
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0"/>
+    <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.0"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.35.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="7.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.Datadog.Logs" Version="0.5.2" />
+    <PackageReference Include="Serilog.Filters.Expressions" Version="2.1.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Bunge.Communication\Bunge.Communication.csproj"/>
+    <ProjectReference Include="..\Bunge.Partner.Contract\Bunge.Partner.Contract.csproj"/>
+    <ProjectReference Include="..\..\..\Shared\Bunge.Infra.Email\Bunge.Infra.Email.csproj"/>
+    <ProjectReference Include="..\Bunge.Partner.Service\Bunge.Partner.Service.csproj"/>
+  </ItemGroup>
+  <Target Name="AfterBuildScript" AfterTargets="Build">
+    <!-- Adiciona permissão de execução ao script setup-hooks.sh para sistemas não-Windows -->
+    <Exec Command="chmod +x ../../../setup-hooks.sh" Condition=" '$(OS)' != 'Windows_NT' "/>
+    <!-- Executa o script setup-hooks.sh para sistemas não-Windows -->
+    <Exec Command="bash ../../../setup-hooks.sh" Condition=" '$(OS)' != 'Windows_NT' "/>
+    <!-- Executa o script setup-hooks.bat para Windows -->
+    <Exec Command="..\..\..\setup-hooks.bat" Condition=" '$(OS)' == 'Windows_NT' "/>
+  </Target>
+
+  <ItemGroup>
+    <Content Update="appsettings.DEVELOPMENTLOCAL.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

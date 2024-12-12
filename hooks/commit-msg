@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Obtém a mensagem de commit do arquivo passado como argumento
+commit_message=$(cat "$1")
+
+# Expressão regular para validar o padrão [00000] e ao menos 3 caracteres após
+pattern='^\[[0-9]{5}\].{11,}'
+
+# Verifica se a mensagem de commit está de acordo com o padrão
+if [[ ! "$commit_message" =~ $pattern ]]; then
+  echo "Erro: A mensagem de commit deve começar com [00000] seguido de ao menos 3 caracteres."
+  echo "Exemplo de formato válido: [12345] Mensagem do commit"
+  exit 1
+fi
+
+# Se tudo estiver ok, permitir o commit
+exit 0
