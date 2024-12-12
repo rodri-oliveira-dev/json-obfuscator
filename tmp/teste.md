@@ -76,6 +76,39 @@ Este projeto possui dois *git hooks* que são instalados automaticamente na prim
 - **Vantagens**:
   - **Produtividade**: Automatiza o processo de restauração, garantindo que você não esqueça de atualizar suas dependências após integrar alterações.
 
+Sim, vale muito a pena mencionar o uso do **.editorconfig** no seu README, especialmente se ele estiver configurado para padronizar o código e melhorar a colaboração em equipe. Adicionar uma seção sobre isso ajuda os desenvolvedores a entenderem como o código deve ser formatado e mostra um cuidado com a qualidade do projeto.
+
+## **Padronização de Código com .editorconfig**
+
+Este projeto utiliza o arquivo **.editorconfig** para garantir uma padronização de estilo e formatação de código entre os desenvolvedores, independentemente da IDE ou editor de texto utilizado.
+
+- **O que é .editorconfig?**  
+  O [**.editorconfig**](https://editorconfig.org/) é um arquivo de configuração usado para definir regras de estilo de código, como espaçamento, indentação, e fim de linha. Ele é suportado por diversas IDEs e editores, como Visual Studio, Visual Studio Code, Rider, e muitos outros.
+
+- **Principais Regras Configuradas no Projeto**:
+  - **Indentação**: Utiliza espaços ao invés de tabs, com 4 espaços por nível de indentação.
+  - **Fim de linha**: Unix (`LF`) para compatibilidade multiplataforma.
+  - **Encoding**: UTF-8 para todos os arquivos.
+  - **Regras de C#**:
+    - Espaço antes e após operadores (`=`, `+`, etc.).
+    - Remoção de linhas em branco desnecessárias.
+    - Uso de `var` conforme apropriado.
+
+- **Como Ele Funciona?**  
+  Ao abrir ou editar arquivos do projeto em uma IDE compatível, o **.editorconfig** aplica automaticamente as regras configuradas, garantindo que o código esteja consistente.
+
+- **Benefícios**:
+  - **Consistência**: Todo o time segue o mesmo padrão de formatação, reduzindo divergências durante revisões de código.
+  - **Automatização**: Com suporte direto na IDE, as regras são aplicadas automaticamente, minimizando esforço manual.
+  - **Compatibilidade**: Garante que o código seja formatado corretamente, independentemente do sistema operacional ou IDE utilizada.
+
+- **Como Ativar o Suporte ao .editorconfig?**
+  - **Visual Studio**: Suporte nativo (versões 2019 ou superiores).
+  - **Visual Studio Code**: Certifique-se de que as extensões relacionadas ao C# e ao **EditorConfig** estão instaladas.
+  - **Rider**: Suporte nativo ao abrir o projeto.
+
+Se quiser modificar ou expandir as regras de estilo, basta editar o arquivo `.editorconfig` na raiz do projeto.
+
 
 ## **Tratamento de Erros no Padrão ProblemDetails**
 
