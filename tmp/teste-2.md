@@ -8,6 +8,8 @@ Além disso, a estratégia assegura que as **injeções de dependência** e os *
 
 ## **Pirâmide de Testes**
 
+![Pirâmide de Testes]([/path/to/image.png](https://global-uploads.webflow.com/619e15d781b21202de206fb5/628b0dca3e6eda9219d40a6a_The-Testing-Pyramid-Simplified-for-One-and-All-1280X720%20(1).jpg) "Pirâmide de Testes").
+
 A **Pirâmide de Testes** é uma metáfora que descreve como estruturar diferentes tipos de testes em um sistema, equilibrando esforço, custo e cobertura. Ela é composta por três níveis principais:
 
 1. **Testes Unitários**: 
