@@ -1,47 +1,26 @@
-using System;
-using System.IO;
-
-class Program
+public static IApplicationBuilder IncludeSecurityHeaders(this IApplicationBuilder app)
 {
-    static void Main(string[] args)
+    app.Use(async (context, next) =>
     {
-        // Solicitar o caminho do arquivo
-        Console.WriteLine("Digite o caminho do arquivo:");
-        string caminhoArquivo = Console.ReadLine()?.Trim();
+        context.Response.Headers.Add("X-Frame-Options", "DENY");
+        context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+        context.Response.Headers.Add("Content-Security-Policy", "default-src 'none'; " +
+                                                                "script-src 'self' 'strict-dynamic'; " +
+                                                                "font-src 'self' https://fonts.gstatic.com; " +
+                                                                "img-src 'self' data:; " +
+                                                                "connect-src 'self'; " +
+                                                                "style-src 'self' https://fonts.googleapis.com");
+        context.Response.Headers.Add("Permissions-Policy", "camera=(), microphone=(), geolocation=(), accelerometer=()");
+        context.Response.Headers.Add("Referrer-Policy", "no-referrer");
+        context.Response.Headers.Add("Cross-Origin-Resource-Policy", "same-origin");
+        context.Response.Headers.Add("Origin-Agent-Cluster", "?1");
+        context.Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+        context.Response.Headers.Add("Expect-CT", "max-age=86400, enforce");
+        context.Response.Headers.Add("X-Permitted-Cross-Domain-Policies", "none");
+        context.Response.Headers.Remove("Server"); // Oculta o servidor
 
-        if (string.IsNullOrWhiteSpace(caminhoArquivo) || !File.Exists(caminhoArquivo))
-        {
-            Console.WriteLine("Arquivo não encontrado ou caminho inválido.");
-            return;
-        }
+        await next();
+    });
 
-        // Termo a buscar
-        string termoABuscar = "return new MensagemRetornoDTO";
-
-        try
-        {
-            // Ler todas as linhas do arquivo
-            string[] linhas = File.ReadAllLines(caminhoArquivo);
-            bool encontrouLinhas = false;
-
-            // Buscar pelo termo em cada linha
-            for (int i = 0; i < linhas.Length; i++)
-            {
-                if (linhas[i].Contains(termoABuscar, StringComparison.OrdinalIgnoreCase))
-                {
-                    encontrouLinhas = true;
-                    Console.WriteLine($"Linha {i + 1}: {linhas[i].Trim()}");
-                }
-            }
-
-            if (!encontrouLinhas)
-            {
-                Console.WriteLine("Nenhuma linha encontrada com o termo buscado.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erro ao processar o arquivo: {ex.Message}");
-        }
-    }
+    return app;
 }
