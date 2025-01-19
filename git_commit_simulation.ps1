@@ -49,7 +49,7 @@ while ($CurrentDate -le [datetime]$EndDate) {
         $CommitMessage = $Messages | Get-Random
 
         # Faz uma alteração no arquivo selecionado
-        "/* Modificação: $CommitMessage em $IsoDate */" | Out-File -Append -FilePath $SelectedFile
+        Add-Content -Path $SelectedFile -Value "/* Modificação: $CommitMessage em $IsoDate */"
 
         # Adiciona e comita as mudanças
         git add $SelectedFile
