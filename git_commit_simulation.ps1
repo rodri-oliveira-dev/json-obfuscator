@@ -49,14 +49,16 @@ while ($CurrentDate -le [datetime]$EndDate) {
         $CommitMessage = $Messages | Get-Random
 
         # Faz uma alteração no arquivo selecionado
-        Add-Content -Path $SelectedFile -Value "/* Modificação: $CommitMessage em $IsoDate */"
+        $NewContent = "/* Modificação única: $CommitMessage em $IsoDate - $(Get-Random) */"
+        Add-Content -Path $SelectedFile -Value $NewContent
+
 
         # Adiciona e comita as mudanças
         git add $SelectedFile
         git commit -m "$CommitMessage" --date="$IsoDate"
 
         # Pausa para simular trabalho (1 a 5 minutos)
-        Start-Sleep -Seconds (Get-Random -Minimum 60 -Maximum 301)
+        Start-Sleep -Seconds (Get-Random -Minimum 1 -Maximum 5)
     }
 
     # Avança para o próximo dia
