@@ -1,5 +1,5 @@
 # Configuração inicial
-$StartDate = "2024-12-01"
+$StartDate = "2025-01-01"
 $EndDate = (Get-Date).AddYears(1).ToString("yyyy-MM-dd")
 $CurrentDate = [datetime]$StartDate
 
