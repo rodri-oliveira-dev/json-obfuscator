@@ -19,48 +19,48 @@ $Messages = @("Corrigindo bug no módulo X",
 $WorkStartHour = 9
 $WorkEndHour = 18
 
+# Garantir que o próprio script não seja rastreado
+if (!(Test-Path ".gitignore")) {
+    Set-Content -Path ".gitignore" -Value "git_commit_simulation.ps1"
+    git add .gitignore
+    git commit -m "Adicionando git_commit_simulation.ps1 ao .gitignore"
+}
+
 while ($CurrentDate -le [datetime]$EndDate) {
-    # Obter o número do dia da semana (1 = Segunda, 7 = Domingo)
     $DayOfWeek = $CurrentDate.DayOfWeek
 
     if ($DayOfWeek -eq "Saturday" -or $DayOfWeek -eq "Sunday") {
-        # Reduz atividade no fim de semana (10% de chance de trabalhar)
         if ((Get-Random -Minimum 1 -Maximum 10) -ne 1) {
             $CurrentDate = $CurrentDate.AddDays(1)
             continue
         }
     }
 
-    # Determina o número de commits no dia (dias úteis têm mais commits)
-    $RandomCommits = Get-Random -Minimum 3 -Maximum 8 # 3 a 7 commits em dias úteis
+    $RandomCommits = Get-Random -Minimum 3 -Maximum 8
 
     for ($i = 1; $i -le $RandomCommits; $i++) {
-        # Define um horário aleatório durante o expediente
         $Hour = Get-Random -Minimum $WorkStartHour -Maximum ($WorkEndHour + 1)
         $Minute = Get-Random -Minimum 0 -Maximum 60
         $Second = Get-Random -Minimum 0 -Maximum 60
 
         $IsoDate = $CurrentDate.AddHours($Hour - $CurrentDate.Hour).AddMinutes($Minute).AddSeconds($Second).ToString("yyyy-MM-ddTHH:mm:sszzz")
 
-        # Escolhe um arquivo aleatório para modificar
         $SelectedFile = $Files | Get-Random
-
-        # Escolhe uma mensagem de commit aleatória
         $CommitMessage = $Messages | Get-Random
 
-        # Faz uma alteração no arquivo selecionado
-        $NewContent = "/* Modificação única: $CommitMessage em $IsoDate - $(Get-Random) */"
-        Add-Content -Path $SelectedFile -Value $NewContent
+        Write-Host "Modificando arquivo: $SelectedFile em $IsoDate"
+        Add-Content -Path $SelectedFile -Value "/* Modificação única: $CommitMessage em $IsoDate - $(Get-Random) */"
 
-
-        # Adiciona e comita as mudanças
+        Write-Host "Adicionando arquivo ao Git..."
         git add $SelectedFile
+
+        Write-Host "Criando commit..."
         git commit -m "$CommitMessage" --date="$IsoDate"
 
-        # Pausa para simular trabalho (1 a 5 minutos)
+        Write-Host "Pausando por alguns segundos..."
         Start-Sleep -Seconds (Get-Random -Minimum 1 -Maximum 5)
     }
 
-    # Avança para o próximo dia
+    Write-Host "Avançando para o próximo dia..."
     $CurrentDate = $CurrentDate.AddDays(1)
 }
